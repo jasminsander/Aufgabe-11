@@ -1,8 +1,0 @@
-c1 = x2;
-c2 = x2;
-
-b1 = c1 + 1
-b2 = c2 - 1
-if c2==0 then bm else b1
-
-bm
