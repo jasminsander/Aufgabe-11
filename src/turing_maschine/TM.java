@@ -15,6 +15,7 @@ public class TM {
 	String startkonfiguration = startzustand + eingabeband;
 	
 	public void initialisiere(File tm_datei) {
+		TM_Parser.parse(tm_datei);
 	}
 	
 	public void naechste_konfiguration() {
