@@ -1,0 +1,7 @@
+c1 = x1,
+c2 = x2,
+
+b1 = c1 ++,
+b2 = c2 --,
+if c2==0 then bm else b1,
+bm,
