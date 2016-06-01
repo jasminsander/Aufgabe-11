@@ -13,6 +13,12 @@ public class AusprobierDatei {
 	
 	TM unsereTM1 = new TM("TM_Datei.txt");
 	TM_Debugger.debugRechnung(unsereTM1, "aabb");
+	
+	System.out.println(" ");
+	System.out.println(" ");
+	
+	TM unsereTM2 = new TM("TM_Datei.txt");
+	TM_Debugger.debugRechnungUntil(unsereTM2, "aabb", 2);
 	}
 
 }
