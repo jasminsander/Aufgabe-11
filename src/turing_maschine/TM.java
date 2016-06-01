@@ -48,12 +48,21 @@ public class TM {
 		return getAktuelleKonfiguration();
 	}
 
-	public void rechnung(int schrittzahl, String eingabeband) {
-
+	public String rechnung(int schrittzahl, String eingabeband) {
+		String output = naechsteKonfiguration(eingabeband);
+		while (output.contains("(") && schrittzahl != 1) {
+			schrittzahl--;
+			output = naechsteKonfiguration();
+		}
+		return output;
 	}
 
-	public void rechnung(String eingabeband) {
-
+	public String rechnung(String eingabeband) {
+		String output = naechsteKonfiguration(eingabeband);
+		while (output.contains("(")) {
+			output = naechsteKonfiguration();
+		}
+		return output;
 	}
 
 	private void moveLSK(String bewegung) {
