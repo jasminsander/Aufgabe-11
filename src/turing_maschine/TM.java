@@ -1,38 +1,77 @@
 package turing_maschine;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TM {
-	final char LEER_FELD = '#';
-	List<Zustand> zustaende = new ArrayList<Zustand>();
-	List<Character> eingabesymbole= new ArrayList<Character>();
-	List<Character> bandsymbole= new ArrayList<Character>();
-	Zustand startzustand;
-	List<Zustand> endzustaende = new ArrayList<Zustand>();
-	Map<String, String> konfigurationen = new HashMap<String, String>();
-	
-	public void initialisiere(File tm_datei) {
-		zustaende = TM_Parser.parse_zustaende(tm_datei);
-		eingabesymbole = TM_Parser.parse_eingabesymbole(tm_datei);
-		bandsymbole = TM_Parser.parse_bandsymbole(tm_datei);
-		startzustand = TM_Parser.parse_startzustand(tm_datei);
-		endzustaende = TM_Parser.parse_endzustaende(tm_datei);
-		konfigurationen = TM_Parser.parse_konfiguration(tm_datei);
+
+	final String LEER_ZEICHEN = "#";
+	private List<Zustand> zustaende = new ArrayList<Zustand>();
+	private Zustand aktuellerZustand;
+	private int LSK = 0;
+	private String band;
+
+	public TM(String tm_datei) throws IOException {
+		new TM_Parser(tm_datei);
+		zustaende = TM_Parser.parse_zustaende();
+		TM_Parser.parse_konfiguration(zustaende);
+		aktuellerZustand = zustaende.get(0);
 	}
-	
-	public void naechste_konfiguration() {
-		
+
+	public String naechsteKonfiguration(String eingabeband) {
+		band = eingabeband;
+		return naechsteKonfiguration();
 	}
-	
-	public void rechnung(int schrittzahl) {
-		
+
+	public String naechsteKonfiguration() {
+		String gelesen;
+
+		if (LSK < 0 || LSK > band.length() - 1) {
+			gelesen = LEER_ZEICHEN;
+		} else {
+			gelesen = String.valueOf(band.charAt(LSK));
+		}
+		List<String> uebergang = aktuellerZustand.getUebergang(gelesen);
+		if (uebergang == null)
+			return "Das Wort wird von der TM nicht akzeptiert.";
+		String schreiben = uebergang.get(0);
+		String bewegung = uebergang.get(1);
+		Zustand folgeZustand = zustaende.get(Integer.valueOf(uebergang.get(2).substring(1, 2)));
+
+		if (folgeZustand.isEndzustand())
+			return "Das Wort wird von der TM akzeptiert.";
+
+		aktuellerZustand = folgeZustand;
+		write(band, schreiben);
+		moveLSK(bewegung);
+		return getAktuelleKonfiguration();
 	}
-	
-	public void rechnung() {
-		
+
+	public void rechnung(int schrittzahl, String eingabeband) {
+
+	}
+
+	public void rechnung(String eingabeband) {
+
+	}
+
+	private void moveLSK(String bewegung) {
+		if (bewegung.equals("L"))
+			LSK--;
+		if (bewegung.equals("R"))
+			LSK++;
+	}
+
+	private void write(String eingabeband, String schreiben) {
+		StringBuilder builder = new StringBuilder();
+		band = builder.append(eingabeband).replace(LSK, LSK + 1, schreiben).toString();
+	}
+
+	public String getAktuelleKonfiguration() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(").append(band.substring(0, LSK)).append("-").append(aktuellerZustand.getName()).append("-")
+				.append(band.substring(LSK, band.length())).append(")");
+		return builder.toString();
 	}
 }
