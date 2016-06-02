@@ -8,74 +8,68 @@ import java.util.List;
 
 public class Parser {
 
-	private static String fileTitle;
-	private List<String> Programm = new ArrayList<String>();
+	private List<String> programm = new ArrayList<String>();
+	private List<String> code = new ArrayList<String>();
 	private List<Zaehler> zaehlerlist = new ArrayList<Zaehler>();
 
-	public Parser(String txt) {
-		Parser.fileTitle = txt;
-	}
-
-	void lies() throws IOException {
-
-		BufferedReader br = new BufferedReader(new FileReader(fileTitle));
+	public Parser(String txt) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(txt));
 		String line = br.readLine();
-
 		// while Zählerprogramm wird gelesen
 		while (line != null) {
-
-			Programm.add(line);
+			programm.add(line);
 			line = br.readLine();
-
 		}
-
 		// schließt die Datei wieder
 		br.close();
 	}
 
-	void compile() {
-		Programm.forEach((String c) -> this.check(c));
-		zaehlerlist.forEach((Zaehler c) -> System.out.println(c.getZaehler()));
+	
+	public void compile() {
+		programm.forEach(c -> parse_zaehler(c));
+		programm.forEach(c -> parse_programm(c));
 	}
 
-	void check(String line) {
-		int i = 1;
+	private void parse_zaehler(String line) {
+		if (line.startsWith("c")) {
+			zaehlerlist.add(new Zaehler("c" + Integer.valueOf(line.substring((line.indexOf("c") + 1), line.indexOf("c") + 2)),
+							Integer.valueOf(line.substring((line.indexOf("=") + 2)))));
+		}
+	}
 
-		if (line.contains("c =")) {
-			zaehlerlist
-					.add(new Zaehler("c" + i, Integer.valueOf(line.substring((line.indexOf("=") + 2), line.length()))));
-			i++;
-			System.out.println(zaehlerlist);
-		} else if (line.contains("++")) {
+	private void parse_programm(String line) {
+		if (line.contains("++")) {
 			// Zählerdekrement
-			zaehlerlist.get(Integer.valueOf(line.substring((line.indexOf("c") + 1), (line.indexOf("++") - 1))) - 1)
-					.dekrement();
+			code.add((line.substring((line.indexOf("c")), (line.indexOf("++") - 1)) + "++"));
 		} else if (line.contains("--")) {
 			// Zählerinkrement
-			zaehlerlist.get(Integer.valueOf(line.substring((line.indexOf("c") + 1), (line.indexOf("--") - 1))) - 1)
-					.inkrement();
+			code.add((line.substring((line.indexOf("c")), (line.indexOf("--") - 1)) + "--"));
 		} else if (line.contains("if")) {
 			// Sprung
-			Integer zaehlerWert = zaehlerlist
-					.get(Integer.valueOf(line.substring((line.indexOf("c") + 1), (line.indexOf("c") + 2))))
-					.getZaehler();
-			Integer kennziffer = Integer.valueOf(line.substring((line.indexOf("th") - 2), (line.indexOf("th") - 1)));
-			Zaehler fall1 = zaehlerlist
-					.get(Integer.valueOf(line.substring((line.indexOf("b") + 1), (line.indexOf("b") + 2))));
-			Zaehler fall2 = zaehlerlist
-					.get(Integer.valueOf(line.substring((line.indexOf("se") + 4), (line.indexOf("se") + 5))));
+			String Zaehler = (line.substring((line.indexOf("c")), (line.indexOf("c") + 2)));
+			String kennziffer = (line.substring((line.indexOf("t") - 2), (line.indexOf("t") - 1)));
+			String fall1 = line.substring((line.indexOf("b") + 1), (line.indexOf("b") + 2));
+			String fall2 = line.substring((line.indexOf("se") + 4), (line.indexOf("se") + 5));
 			if (line.contains("==")) {
-				System.out.println(this.Sprung((zaehlerWert == kennziffer), fall1, fall2));
+				code.add(Zaehler + "==" + kennziffer + ":" + fall1 + " " + fall2);
+			} else if (line.contains("=>")) {
+				code.add(Zaehler + "=>" + kennziffer + ":" + fall1 + " " + fall2);
+			} else if (line.contains(">")) {
+				code.add(Zaehler + ">" + kennziffer + ":" + fall1 + " " + fall2);
+			} else if (line.contains("<")) {
+				code.add(Zaehler + "<" + kennziffer + ":" + fall1 + " " + fall2);
+			} else {
+				code.add(Zaehler + "=<" + kennziffer + ":" + fall1 + " " + fall2);
 			}
 		}
 	}
 
-	private Zaehler Sprung(boolean Fall, Zaehler eins, Zaehler zwei) {
-		if (Fall == true) {
-			return (eins);
-		} else {
-			return (zwei);
-		}
+	public List<String> getCode() {
+		return code;
+	}
+
+	public List<Zaehler> getZaehler() {
+		return zaehlerlist;
 	}
 
 }

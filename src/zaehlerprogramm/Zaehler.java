@@ -1,8 +1,8 @@
 package zaehlerprogramm;
 
 public class Zaehler {
-	public int zaehler;
 	public String name;
+	public int zaehler;
 	
 	public Zaehler(String name, int zaehler) {
 		this.name = name;
@@ -10,21 +10,24 @@ public class Zaehler {
 	}
 
 	public void dekrement(){
-		this.zaehler++;
+		zaehler--;
 	}
 	
 	public void inkrement(){
-		this.zaehler--;
+		zaehler++;
 	}
 	
 	public String getName() {
-		return name;
+		return  name;
 	}
 	
 	public int getZaehler() {
 		return zaehler;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "Zaehler [name=" + name + ", zaehler=" + zaehler + "]";
+	}
 	
 }
