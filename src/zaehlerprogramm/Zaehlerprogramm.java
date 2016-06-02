@@ -6,13 +6,16 @@ import java.util.List;
 public class Zaehlerprogramm {
 	private List<Zaehler> zaehlerliste;
 	private List<String> programm;
+	private String debugger = null;
 	int aktuelleProgrammzeile = 0;
 
-	public Zaehlerprogramm(String txt_File) throws IOException {
+	public Zaehlerprogramm(String txt_File, String debugger) throws IOException {
 		Parser Temp = new Parser(txt_File);
 		Temp.compile();
 		this.zaehlerliste = Temp.getZaehler();
 		this.programm = Temp.getCode();
+		this.debugger = debugger;
+		
 		System.out.println("Eingabe:");
 		zaehlerliste.forEach(c -> System.out.println(c.toString()));
 	}
@@ -36,8 +39,9 @@ public class Zaehlerprogramm {
 		}
 	}
 
-	public void programmAusfuehren() {
+	public void programmAusfuehren() throws IOException {
 		while (aktuelleProgrammzeile < programm.size()) {
+			withDebugger(debugger);
 			ausfuehren(aktuelleProgrammzeile);
 		}
 		System.out.println("Ergebnis:");
@@ -58,6 +62,19 @@ public class Zaehlerprogramm {
 		}else{
 			this.aktuelleProgrammzeile = fall2;
 		}
-
 	}
+	
+	private void withDebugger(String debugger) throws IOException{
+		if(debugger == "t"){
+			Zaehlerprogramm_Debugger.debugRechnung(this);	
+		}else if(debugger == "m"){
+			Zaehlerprogramm_Debugger.debugManually(this);
+		}
+	}
+
+	public String getAktuelleProgrammzeile() {
+		return programm.get(aktuelleProgrammzeile);
+	}
+	
+	
 }
